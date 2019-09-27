@@ -1,0 +1,49 @@
+Behavioral(동작적) Statement (서술)
+
+- inital, always 로 시작
+
+- initial로 시작되는 behavioral statement는 1번만 수행됨 
+
+- always로 시작되는 behavioral statement는 반복 수행됨 
+
+- 모든 behavioral statement는 각각 병렬로 수행됨 
+
+- behavioral statement 내부의 begin … end사이에서는 순차적으로 수행됨
+
+ * 인간적 사고에 가장 근접한 표현
+
+
+
+C언어와 비슷하다
+
+begin end = {}
+
+와 같이 한줄이면 생략가능
+
+
+
+*IF
+
+ - &&(and) ||(or) 와 같은 논리 연산자를 사용한다.
+
+
+
+*CASE
+
+*CASEX
+
+*CASEZ
+
+
+
+*LOOP
+
+ ** forever statement
+
+ ** repeat (expression) statement;
+
+(횟수로 반복)
+
+ ** while (expression) statement;
+
+ ** for(assigshment; expression; aggignment) statement;
