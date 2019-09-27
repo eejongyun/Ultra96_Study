@@ -1,5 +1,5 @@
 /*
-Behavioral(동작적) Statement (서술)
+Behavioral(행위) Statement (서술)
 - inital, always 로 시작
 - initial로 시작되는 behavioral statement는 1번만 수행됨 
 - always로 시작되는 behavioral statement는 반복 수행됨 
@@ -11,66 +11,78 @@ Behavioral(동작적) Statement (서술)
 
 
 C언어와 비슷하다
+begin end = {} 와 같고 
+한줄이면 생략가능
 
-begin end = {}
-
-와 같이 한줄이면 생략가능
-
-
-
-*IF
-**if
-**ifnone
-
- - &&(and) ||(or) 와 같은 논리 연산자를 사용한다.
+reg out;
+always @(sel or a or b)
+ out = sel ? a:b;
 
 
+//IEEE1364-2005 Standard for Verilog부터 Event관련 아래 용법이 허용범
+● "or" 대신에 콤마(",")로 사용이 가능
+● 모든 Event를 명시하지 못하는 실수가 많아 "@*"또는 "@(*)" 사용이 가능
 
-*CASE
-
-*CASEX
-
-*CASEZ
+reg out;
+always @(sel, a, b)
+ out = sel ? a:b;
+*/
 
 
 
-*LOOP
-
- ** forever statement 
- : Forever executes one or more statements in an indefinite loop.
-
-initial
-begin : Clock
-  Clk = 0;
-  forever 
-    #50 Clk = !Clk;
+■ 1. IF
+※ 모든 branch에 대해 정의해야됨
+always @ (a or b or c or d)
+begin
+  if(a)
+    begin
+      e<=c;
+      f<=d;
+    end;
+   else if(b)
+      begin
+        g<=c;
+        h<=d;
+      end
+  else
+    i<=c;    //한문장이라 begin end가 필요업음 굳이..써도됨.
 end
 
 
- ** repeat (expression) statement;
-
-(횟수로 반복)
-
- ** while (expression) statement;
-
- ** for(assigshment; expression; aggignment) statement;
-
-
+■ 2.CASE
+/*
+각 비트가 0 1 X Z를 포함한 정확히 같은 경우에만 일치로 판단
+모든경우들에 대해여 일치되는 항이 없을경우 default 문장이 실행
+default 항이 없으면 변수는 이전에 할당받은 값을 유지
+하나의 case문에 여러개의 default를 사용하지 않는것을 허용되지 않음
 */
+case(조건)
+  경우1 : 문장1;
+  경우2 : 문장2;
+  경우3 : 문장3;
+ ...
+ default : 문장default;
+endcase;
 
-exmple 1
+// 경우1..2.3..나열된 순서로 비교함.
+// 만족하는 경우가 X ->default
+// Default없을시 기존값 유지
+// C언어 Switch문은 경우1이 맞고 경우2가 맞다면 1.2 둘다 실행된다. 
+// 그걸 방지 하기위해서 switch문에서는 Break문을 써서 나감
 
-reg [1:0] address;
-case (address)
-  2'b00 : statement1;
-  2'b01, 2'b10 : statement2;
-  default : statement3;
-endcase
-
-//If the address value is 2'b00 then statement1 will be executed. Statement2 is executed when address value equals 2'b01 or 2'b10. Otherwise statement3 is executed.
-
-Example 2
-
+switch (/* 변수 */) {
+  case /* 값1 */:
+    // 명령들;
+    break;
+  case /* 값2 */:
+    // 명령들;
+    break;
+    //.. (생략) ..
+}
+   
+////////////////////////
+//■ CASE 일반적인 경우
+///////////////////////
 reg a;
 case (a)
   1'b0 : statement1;
@@ -78,23 +90,33 @@ case (a)
   1'bx : statement3;
   1'bz : statement4;
 endcase
-
-//In Example 2, the statements will be executed depending on the value of the 'a' variable (if a = 1'b0 then statement1 will be executed, etc). If we assign a question mark (?) to the 'a' variable, then statement4 will be executed because the syntax concerning numbers defines the question mark as equal to the z value.
-
-Example 3
-
-reg a;
-casez (a)
-  1'b0 : statement1;
-  1'b1 : statement2;
-  1'bx : statement3;
-  1'bz : statement4;
+//a가 0,1,x,z 해당하는걸로 출력
+   
+////////////////////////
+//■ CASE 예제1
+///////////////////////
+reg [1:0] address;
+case (address)
+  2'b00 : statement1;
+  2'b01, 2'b10 : statement2;
+  default : statement3;
 endcase
+//address : 00 statement1
+//address : 01이나 10이면 statement2
+//address : 그외 statement3
+   
+////////////////////////
+//■ CASE 예제2
+///////////////////////
+reg a;
+case (1'b1)
+  a : statement1;
+endcase
+a가 1'b1일때만 "statement1" 가 실행됨.
 
-//If value of variable 'a' is 1'b0 or 1'b1 or 1'bx then statement1, statement2 or statement3 will be executed respectively. If 'a' equals 1'bz or 1'b? then statement1 will be executed because the casez statement treats z and ? as the don't-care values. Statement4 will never be executed because only the first case item, which matches with the case expression, is executed.
-
-Example 4
-
+////////////////////////
+//■ CASEX 예제
+///////////////////////
 reg a;
 casex (a)
   1'b0 : statement1;
@@ -103,13 +125,51 @@ casex (a)
   1'bz : statement4;
 endcase
 
-//If variable 'a' is 1'b0 or 1'b1 then statement1 and statement2 will be executed respectively. If 'a' equals 1'bx or 1'bz or 1'b? then statement1 will be executed (x, z and ? are don't care values for the casex statement). Statement3 and statement4 will never be executed.
-
-Example 5
-
+//a가 0,1이면 해당하는거
+//x,z면 don't care로 첫번째 조건실행(" 1'b0 : statement1;") 
+   
+////////////////////////
+//■ CASEZ 예제
+///////////////////////
 reg a;
-case (1'b1)
-  a : statement1;
+casez (a)
+  1'b0 : statement1;
+  1'b1 : statement2;
+  1'bx : statement3;
+  1'bz : statement4;
 endcase
+//a가 0,1,x 이면 해당하는거
+//z면 don't care로 첫번째 조건실행(" 1'b0 : statement1;")
+   
 
-// The case expression can be a constant expression. In Example 5, statement1 will be executed only if 'a' is equal to 1'b1
+■ LOOP
+■■ forever statement 
+Forever executes one or more statements in an indefinite loop.
+
+initial
+begin : Clock
+  Clk = 0;
+  forever 
+    #50 Clk = !Clk;k
+end
+▲
+
+ ** repeat (expression) statement;
+
+(횟수로 반복)
+
+ ** while (expression) statement;
+
+■ for 문 
+for(초기값; 조건문; 증감)
+   begin
+    "순차구문"
+   end
+end
+   statement;
+
+
+   
+     
+   
+   
