@@ -140,35 +140,87 @@ endcase
 //a가 0,1,x 이면 해당하는거
 //z면 don't care로 첫번째 조건실행(" 1'b0 : statement1;")
    
-
-■ LOOP
-■■ forever statement 
+//★★★★★★★★★★★★
+//■ Loop Loop Loop Loop
+//★★★★★★★★★★★★
+   
+////////////////////////
+//■ forever 문
+///////////////////////
 Forever executes one or more statements in an indefinite loop.
 
 initial
 begin : Clock
   Clk = 0;
   forever 
-    #50 Clk = !Clk;k
+    #50 Clk = !Clk;
 end
-▲
-
- ** repeat (expression) statement;
-
-(횟수로 반복)
-
- ** while (expression) statement;
-
-■ for 문 
-for(초기값; 조건문; 증감)
-   begin
-    "순차구문"
-   end
+// 50ns마다 Clk이 반전 
+//(timescale 왼쪽 값에 해당 `timescale 1ns/ns 일때)
+   
+////////////////////////
+//■ repeat 문
+///////////////////////
+initial begin
+  repeat (10) a = a + ~b;
 end
-   statement;
 
+   //주어진 고정된 값(10번) 만큼 실행됨
+   //a=1, b=0일경우
+   //[1] : x = 1 + ~(0)
+   //      2 = 1 + 1
+   //[2]     = 2 + 1
+   //[3]     = 3 + 1
+   //[4]     = 4 + 1
+   //[5]     = 5 + 1
+   //[6]     = 6 + 1
+   //[7]     = 7 + 1
+   //[8]     = 8 + 1
+   //[9]     = 9 + 1
+   //[10] 11 =10 + 1
+   // a = 11
+   
 
+////////////////////////
+//■ while 문
+///////////////////////
+module test;
+parameter MSB = 8;
+reg [MSB-1:0] Vector;
+integer t;
+initial
+
+begin
+  t = 0;
+  while (t < MSB)
+    begin
+      //Initializes vector elelments
+      Vector[t] = 1'b0;
+      t = t + 1;
+    end
+end
+endmodule
+// t = 0, Vector[0] = 0
+// t = 1, Vector[1] = 0
+// t = 2, Vector[2] = 0
+// t = 3, Vector[3] = 0
+// t = 4, Vector[4] = 0
+// t = 5, Vector[5] = 0
+// t = 6, Vector[6] = 0
+// t = 7, Vector[7] = 0
+// t = 8, while(8<8) = false로 Break
    
-     
+//while 문이 true시 while문 실행되고, False시 While문을 나감
    
-   
+////////////////////////
+//■ for문
+///////////////////////
+initial begin
+  for (index=0; index < 10; index = index + 2)
+  mem[index] = index;
+end
+   //index = 0 일때 mem[0] =  0
+   //index = 2 일때 mem[0] =  2
+   //index = 4 일때 mem[0] =  4
+   //index = 6 일때 mem[0] =  6
+   //index = 8 일때 mem[0] =  8
