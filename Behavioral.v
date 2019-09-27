@@ -29,7 +29,6 @@ always @(sel, a, b)
 */
 
 
-
 ■ 1. IF
 ※ 모든 branch에 대해 정의해야됨
 always @ (a or b or c or d)
